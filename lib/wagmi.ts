@@ -10,7 +10,7 @@ export const wagmiConfig = createConfig({
     coinbaseWallet({ appName: "Mushee Flow" }),
   ],
   transports: {
-    [polygon.id]: http(process.env.NEXT_PUBLIC_POLYGON_RPC_URL || "https://polygon-rpc.com"),
+    [polygon.id]: http("https://polygon.llamarpc.com"),
   },
-  ssr: true,
+  ssr: false,
 });
