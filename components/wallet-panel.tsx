@@ -19,14 +19,20 @@ export function WalletPanel() {
   const nativeBalance = useBalance({
     address,
     chainId: polygon.id,
-    query: { enabled: !!address && onPolygon, refetchInterval: 5000 },
+    query: {
+      enabled: !!address && onPolygon,
+      refetchInterval: 5000,
+    },
   });
 
   const usdcBalance = useBalance({
     address,
     token: POLYGON_USDC,
     chainId: polygon.id,
-    query: { enabled: !!address && onPolygon, refetchInterval: 5000 },
+    query: {
+      enabled: !!address && onPolygon,
+      refetchInterval: 5000,
+    },
   });
 
   return (
@@ -57,14 +63,22 @@ export function WalletPanel() {
         <div className="rounded-2xl border border-edge bg-[#11151d] p-4">
           <div className="text-zinc-500">USDC</div>
           <div className="mt-1 font-medium text-white">
-            {usdcBalance.data ? Number(usdcBalance.data.formatted).toFixed(3) : "0.000"}
+            {usdcBalance.isLoading
+              ? "Loading..."
+              : usdcBalance.data
+              ? Number(usdcBalance.data.formatted).toFixed(3)
+              : "0.000"}
           </div>
         </div>
 
         <div className="rounded-2xl border border-edge bg-[#11151d] p-4">
           <div className="text-zinc-500">POL</div>
           <div className="mt-1 font-medium text-white">
-            {nativeBalance.data ? Number(nativeBalance.data.formatted).toFixed(4) : "0.0000"}
+            {nativeBalance.isLoading
+              ? "Loading..."
+              : nativeBalance.data
+              ? Number(nativeBalance.data.formatted).toFixed(4)
+              : "0.0000"}
           </div>
         </div>
 
