@@ -1,7 +1,6 @@
 "use client";
 
-import { useAccount, useBalance, useConnect, useDisconnect, useReadContract } from "wagmi";
-import { erc20Abi, formatUnits } from "viem";
+import { useAccount, useBalance, useConnect, useDisconnect } from "wagmi";
 import { polygon } from "wagmi/chains";
 import { MUSHEE_TREASURY, POLYGON_USDC } from "@/lib/config";
 
@@ -20,24 +19,15 @@ export function WalletPanel() {
   const nativeBalance = useBalance({
     address,
     chainId: polygon.id,
-    query: { enabled: !!address && onPolygon },
+    query: { enabled: !!address && onPolygon, refetchInterval: 5000 },
   });
 
-  const usdc = useReadContract({
-    address: POLYGON_USDC,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
+  const usdcBalance = useBalance({
+    address,
+    token: POLYGON_USDC,
     chainId: polygon.id,
-    query: { enabled: !!address && onPolygon },
+    query: { enabled: !!address && onPolygon, refetchInterval: 5000 },
   });
-
-  const usdcFormatted =
-    typeof usdc.data === "bigint"
-      ? Number(formatUnits(usdc.data, 6)).toFixed(3)
-      : usdc.isLoading
-      ? "Loading..."
-      : "0.000";
 
   return (
     <div className="rounded-3xl border border-edge bg-panel p-5 shadow-soft">
@@ -66,11 +56,13 @@ export function WalletPanel() {
 
         <div className="rounded-2xl border border-edge bg-[#11151d] p-4">
           <div className="text-zinc-500">USDC</div>
-          <div className="mt-1 font-medium text-white">{usdcFormatted}</div>
+          <div className="mt-1 font-medium text-white">
+            {usdcBalance.data ? Number(usdcBalance.data.formatted).toFixed(3) : "0.000"}
+          </div>
         </div>
 
         <div className="rounded-2xl border border-edge bg-[#11151d] p-4">
-          <div className="text-zinc-500">MATIC</div>
+          <div className="text-zinc-500">POL</div>
           <div className="mt-1 font-medium text-white">
             {nativeBalance.data ? Number(nativeBalance.data.formatted).toFixed(4) : "0.0000"}
           </div>
@@ -97,7 +89,7 @@ export function WalletPanel() {
         ) : (
           <div className="rounded-2xl border border-edge bg-[#11151d] p-4 text-sm text-zinc-400">
             {onPolygon
-              ? "Connected on Polygon. Keep some MATIC for gas."
+              ? "Connected on Polygon. Keep some POL for gas."
               : "Please switch your wallet to Polygon mainnet."}
           </div>
         )}
